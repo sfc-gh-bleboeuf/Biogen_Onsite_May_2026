@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biogen + Snowflake | Clinical Data Intelligence | May 13, 2026</title>
+<style>
+  :root {
+    --sf-blue: #29B5E8;
+    --sf-deep: #11567E;
+    --sf-navy: #1B2B4B;
+    --sf-white: #FFFFFF;
+    --sf-light: #E8F4FD;
+    --sf-lighter: #F5F9FC;
+    --sf-gray: #6B7280;
+    --sf-dark-text: #0D1B2A;
+    --sf-accent: #00A3E0;
+    --sf-teal: #007DAA;
+    --sf-green: #0EB07B;
+    --sf-orange: #F47721;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    background: #0D1B2A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  .deck {
+    position: relative;
+    width: 1280px;
+    height: 720px;
+    overflow: hidden;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.7);
+    border-radius: 4px;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    width: 1280px;
+    height: 720px;
+    display: none;
+    flex-direction: column;
+    background: var(--sf-white);
+  }
+  .slide.active { display: flex; }
+
+  /* ─── HEADER BAR ─── */
+  .slide-header {
+    background: var(--sf-navy);
+    padding: 18px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .slide-header .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--sf-white);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .slide-header .logo svg { width: 28px; height: 28px; }
+  .slide-header .tag {
+    color: var(--sf-blue);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* ─── FOOTER BAR ─── */
+  .slide-footer {
+    background: var(--sf-lighter);
+    border-top: 1px solid #DCE9F4;
+    padding: 10px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .slide-footer .copy {
+    font-size: 11px;
+    color: var(--sf-gray);
+  }
+  .slide-footer .counter {
+    font-size: 11px;
+    color: var(--sf-gray);
+  }
+
+  /* ─── PROGRESS BAR ─── */
+  .progress {
+    height: 3px;
+    background: var(--sf-blue);
+    transition: width 0.35s ease;
+    flex-shrink: 0;
+  }
+
+  /* ─── CONTENT AREA ─── */
+  .content {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ─── SLIDE 1: TITLE ─── */
+  .slide-title {
+    background: linear-gradient(135deg, var(--sf-navy) 0%, var(--sf-deep) 60%, #1a6e9e 100%);
+  }
+  .slide-title .content {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .title-bg-circle {
+    position: absolute;
+    right: -80px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(41,181,232,0.18) 0%, rgba(41,181,232,0.04) 60%, transparent 80%);
+    pointer-events: none;
+  }
+  .slide-title .eyebrow {
+    color: var(--sf-blue);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .slide-title h1 {
+    color: var(--sf-white);
+    font-size: 54px;
+    font-weight: 700;
+    line-height: 1.12;
+    max-width: 680px;
+    margin-bottom: 12px;
+  }
+  .slide-title h1 span { color: var(--sf-blue); }
+  .slide-title .subtitle {
+    color: rgba(255,255,255,0.7);
+    font-size: 20px;
+    font-weight: 400;
+    max-width: 580px;
+    margin-bottom: 48px;
+    line-height: 1.5;
+  }
+  .title-meta {
+    display: flex;
+    gap: 40px;
+  }
+  .meta-item label {
+    display: block;
+    color: var(--sf-blue);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .meta-item span {
+    color: var(--sf-white);
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .title-divider {
+    width: 60px;
+    height: 3px;
+    background: var(--sf-blue);
+    margin-bottom: 32px;
+    border-radius: 2px;
+  }
+
+  /* ─── SECTION DIVIDER ─── */
+  .slide-section {
+    background: linear-gradient(135deg, var(--sf-blue) 0%, var(--sf-deep) 100%);
+  }
+  .slide-section .content {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px;
+  }
+  .slide-section .section-number {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 16px;
+  }
+  .slide-section h2 {
+    font-size: 52px;
+    font-weight: 700;
+    color: var(--sf-white);
+    margin-bottom: 18px;
+    line-height: 1.1;
+  }
+  .slide-section p {
+    font-size: 18px;
+    color: rgba(255,255,255,0.75);
+    max-width: 560px;
+    line-height: 1.6;
+  }
+  .section-icon {
+    width: 72px;
+    height: 72px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 32px;
+  }
+
+  /* ─── STANDARD CONTENT SLIDE ─── */
+  .slide-content .content {
+    padding: 36px 48px 20px;
+  }
+  .slide-h2 {
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--sf-navy);
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+  .slide-h2 span { color: var(--sf-blue); }
+  .slide-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--sf-blue);
+    margin-bottom: 8px;
+  }
+  .slide-lead {
+    font-size: 15px;
+    color: var(--sf-gray);
+    margin-bottom: 28px;
+    line-height: 1.6;
+    max-width: 900px;
+  }
+
+  /* ─── CARDS ─── */
+  .cards-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    flex: 1;
+  }
+  .cards-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    flex: 1;
+  }
+  .cards-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    flex: 1;
+  }
+  .card {
+    background: var(--sf-lighter);
+    border: 1px solid #DCE9F4;
+    border-radius: 8px;
+    padding: 22px 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  .card-blue {
+    background: linear-gradient(135deg, var(--sf-navy) 0%, var(--sf-deep) 100%);
+    border: none;
+    color: white;
+  }
+  .card-accent {
+    background: var(--sf-blue);
+    border: none;
+    color: white;
+  }
+  .card .card-icon {
+    font-size: 26px;
+    margin-bottom: 10px;
+  }
+  .card .card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--sf-navy);
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+  .card-blue .card-title, .card-accent .card-title { color: white; }
+  .card .card-text {
+    font-size: 13px;
+    color: var(--sf-gray);
+    line-height: 1.55;
+    flex: 1;
+  }
+  .card-blue .card-text, .card-accent .card-text { color: rgba(255,255,255,0.82); }
+  .card .card-tag {
+    display: inline-block;
+    margin-top: 10px;
+    background: var(--sf-blue);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 3px;
+  }
+  .card-blue .card-tag { background: rgba(255,255,255,0.2); }
+
+  /* ─── AGENDA ─── */
+  .agenda-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    flex: 1;
+  }
+  .agenda-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: var(--sf-lighter);
+    border: 1px solid #DCE9F4;
+    border-radius: 8px;
+    padding: 16px 18px;
+    border-left: 4px solid var(--sf-blue);
+  }
+  .agenda-time {
+    min-width: 80px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--sf-blue);
+    padding-top: 1px;
+  }
+  .agenda-body .atitle {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--sf-navy);
+    margin-bottom: 3px;
+  }
+  .agenda-body .adetail {
+    font-size: 12px;
+    color: var(--sf-gray);
+    line-height: 1.4;
+  }
+
+  /* ─── TEAM CARDS ─── */
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    flex: 1;
+  }
+  .team-card {
+    background: var(--sf-lighter);
+    border: 1px solid #DCE9F4;
+    border-radius: 8px;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--sf-blue), var(--sf-deep));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    flex-shrink: 0;
+  }
+  .team-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--sf-navy);
+    margin-bottom: 4px;
+  }
+  .team-role {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--sf-blue);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .team-bio {
+    font-size: 12px;
+    color: var(--sf-gray);
+    line-height: 1.55;
+  }
+
+  /* ─── STAT CARDS ─── */
+  .stat-row {
+    display: flex;
+    gap: 18px;
+    margin-bottom: 20px;
+  }
+  .stat {
+    flex: 1;
+    background: linear-gradient(135deg, var(--sf-navy), var(--sf-deep));
+    border-radius: 8px;
+    padding: 18px 20px;
+    color: white;
+    text-align: center;
+  }
+  .stat .stat-num {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--sf-blue);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat .stat-label {
+    font-size: 12px;
+    color: rgba(255,255,255,0.75);
+    font-weight: 500;
+  }
+
+  /* ─── LIST ─── */
+  .check-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .check-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--sf-dark-text);
+    line-height: 1.5;
+  }
+  .check-list li::before {
+    content: '✓';
+    color: var(--sf-blue);
+    font-weight: 700;
+    font-size: 15px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ─── TWO-COL LAYOUT ─── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    flex: 1;
+  }
+  .col-panel {
+    background: var(--sf-lighter);
+    border: 1px solid #DCE9F4;
+    border-radius: 8px;
+    padding: 22px 20px;
+  }
+  .col-panel h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--sf-navy);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--sf-blue);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ─── CODE BLOCK ─── */
+  .code-block {
+    background: #0D1B2A;
+    border-radius: 8px;
+    padding: 18px 22px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    color: #ACE5F5;
+    overflow: hidden;
+    flex: 1;
+  }
+  .code-block .kw { color: #56D8FF; font-weight: 600; }
+  .code-block .fn { color: #FFD700; }
+  .code-block .str { color: #98E06B; }
+  .code-block .cm { color: #5C7A8A; font-style: italic; }
+  .code-block .num { color: #F47721; }
+
+  /* ─── DEMO FLOW ─── */
+  .demo-flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    flex: 1;
+  }
+  .demo-step {
+    flex: 1;
+    background: var(--sf-lighter);
+    border: 1px solid #DCE9F4;
+    border-radius: 8px;
+    padding: 18px 16px;
+    text-align: center;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .demo-step + .demo-step {
+    margin-left: 0;
+  }
+  .demo-arrow {
+    display: flex;
+    align-items: center;
+    padding: 0 6px;
+    color: var(--sf-blue);
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .demo-step .step-num {
+    width: 28px;
+    height: 28px;
+    background: var(--sf-blue);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+  }
+  .demo-step .step-icon { font-size: 24px; margin-bottom: 8px; }
+  .demo-step .step-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--sf-navy);
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+  .demo-step .step-detail {
+    font-size: 11px;
+    color: var(--sf-gray);
+    line-height: 1.5;
+  }
+
+  /* ─── VISION SLIDE ─── */
+  .vision-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex: 1;
+    padding: 20px 48px;
+    gap: 20px;
+  }
+  .vision-quote {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--sf-navy);
+    line-height: 1.35;
+    max-width: 800px;
+  }
+  .vision-quote span { color: var(--sf-blue); }
+  .vision-sub {
+    font-size: 16px;
+    color: var(--sf-gray);
+    max-width: 640px;
+    line-height: 1.6;
+  }
+  .vision-pills {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .pill {
+    background: var(--sf-lighter);
+    border: 1px solid var(--sf-blue);
+    color: var(--sf-navy);
+    border-radius: 24px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  /* ─── NEXT STEPS ─── */
+  .next-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    flex: 1;
+  }
+  .next-step-item {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    background: var(--sf-lighter);
+    border: 1px solid #DCE9F4;
+    border-radius: 8px;
+    padding: 16px 20px;
+  }
+  .ns-num {
+    width: 36px;
+    height: 36px;
+    background: var(--sf-blue);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .ns-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--sf-navy);
+    margin-bottom: 2px;
+  }
+  .ns-detail {
+    font-size: 12px;
+    color: var(--sf-gray);
+  }
+  .ns-owner {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--sf-blue);
+    background: var(--sf-light);
+    border: 1px solid var(--sf-blue);
+    border-radius: 4px;
+    padding: 4px 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* ─── THANK YOU ─── */
+  .slide-thanks {
+    background: linear-gradient(135deg, var(--sf-navy) 0%, var(--sf-deep) 100%);
+  }
+  .slide-thanks .content {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 24px;
+    padding: 40px;
+  }
+  .thanks-logo { font-size: 64px; }
+  .thanks-h1 {
+    font-size: 48px;
+    font-weight: 700;
+    color: white;
+  }
+  .thanks-h1 span { color: var(--sf-blue); }
+  .thanks-sub {
+    font-size: 18px;
+    color: rgba(255,255,255,0.7);
+    max-width: 560px;
+    line-height: 1.6;
+  }
+  .thanks-contact {
+    display: flex;
+    gap: 32px;
+  }
+  .contact-item label {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--sf-blue);
+    margin-bottom: 4px;
+  }
+  .contact-item span {
+    font-size: 14px;
+    color: white;
+    font-weight: 500;
+  }
+
+  /* ─── NAVIGATION ─── */
+  .nav {
+    position: fixed;
+    bottom: 28px;
+    right: 36px;
+    display: flex;
+    gap: 10px;
+    z-index: 100;
+  }
+  .nav button {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    backdrop-filter: blur(8px);
+  }
+  .nav button:hover {
+    background: var(--sf-blue);
+    border-color: var(--sf-blue);
+  }
+  .nav button:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .badge-blue { background: var(--sf-blue); color: white; }
+  .badge-green { background: var(--sf-green); color: white; }
+  .badge-orange { background: var(--sf-orange); color: white; }
+  .badge-navy { background: var(--sf-navy); color: white; }
+
+  .divider-line {
+    height: 2px;
+    background: linear-gradient(90deg, var(--sf-blue), transparent);
+    margin: 12px 0;
+  }
+
+  /* ─── PLATFORM DIAGRAM ─── */
+  .platform-diagram {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+  .platform-row {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+  }
+  .platform-box {
+    flex: 1;
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .pb-dark { background: var(--sf-navy); }
+  .pb-blue { background: var(--sf-blue); }
+  .pb-mid { background: var(--sf-deep); }
+  .pb-light { background: var(--sf-lighter); border: 1px solid #DCE9F4; }
+  .platform-box .pb-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 4px;
+  }
+  .pb-light .pb-title { color: var(--sf-navy); }
+  .platform-box .pb-sub {
+    font-size: 10px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.4;
+  }
+  .pb-light .pb-sub { color: var(--sf-gray); }
+
+  .highlight-box {
+    background: linear-gradient(135deg, var(--sf-blue) 0%, var(--sf-deep) 100%);
+    border-radius: 8px;
+    padding: 16px 20px;
+    color: white;
+    margin-bottom: 16px;
+  }
+  .highlight-box .hb-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .highlight-box .hb-text {
+    font-size: 12px;
+    color: rgba(255,255,255,0.82);
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- ──────────────────────────────── -->
+  <!-- SLIDE 1: TITLE                  -->
+  <!-- ──────────────────────────────── -->
+  <div class="slide slide-title active" id="slide-1">
+    <div class="progress" id="progress"></div>
+    <div class="content">
+      <div class="title-bg-circle"></div>
+      <div class="eyebrow">Snowflake × Biogen Clinical &nbsp;|&nbsp; May 13, 2026</div>
+      <h1>Clinical Data <span>Intelligence</span><br>with Snowflake</h1>
+      <div class="subtitle">A 2-Hour Overview for Clinical &amp; SAS Teams — from Data Warehouse to AI Platform</div>
+      <div class="title-divider"></div>
+      <div class="title-meta">
+        <div class="meta-item">
+          <label>Date &amp; Time</label>
+          <span>Wednesday, May 13 · 11am–1pm EDT</span>
+        </div>
+        <div class="meta-item">
+          <label>Presented By</label>
+          <span>Bob LeBoeuf, Kelci Miclaus, Ryan Stevens</span>
+        </div>
+        <div class="meta-item">
+          <label>Audience</label>
+          <span>Daniel Boisvert, Francis Kendall + Team</span>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="copy">© 2026 Snowflake Inc. All Rights Reserved &nbsp;|&nbsp; CONFIDENTIAL</span>
+      <span class="counter" id="counter-1">1 / 17</span>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────── -->
+  <!-- SLIDE 2: AGENDA                 -->
+  <!-- ──────────────────────────────── -->
+  <div class="slide slide-content" id="slide-2">
+    <div class="progress"></div>
+    <div class="slide-header">
+      <div class="logo">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16 2L16 30M2 16L30 16M5.5 5.5L26.5 26.5M26.5 5.5L5.5 26.5" stroke="#29B5E8" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="16" cy="16" r="3" fill="#29B5E8"/>
+        </svg>
+        Snowflake
+      </div>
+      <span class="tag">Today's Agenda</span>
+    </div>
+    <div class="content" style="padding: 28px 48px 16px;">
+      <div class="slide-eyebrow">Two Hours, Six Topics</div>
+      <div class="slide-h2">What We'll Cover Today</div>
+      <p class="slide-lead">A structured overview moving from platform fundamentals to live AI demos — grounded in clinical data use cases familiar to your SAS team.</p>
+      <div class="agenda-grid">
+        <div class="agenda-item">
+          <div class="agenda-time">11:00–11:05</div>
+          <div class="agenda-body">
+            <div class="atitle">Welcome &amp; Introductions</div>
+            <div class="adetail">Team introductions, goals for today, housekeeping</div>
+          </div>
+        </div>
+        <div class="agenda-item">
+          <div class="agenda-time">11:05–11:25</div>
+          <div class="agenda-body">
+            <div class="atitle">Snowflake Platform: Beyond the Warehouse</div>
+            <div class="adetail">Data Cloud vision, architecture, why life sciences teams choose Snowflake</div>
+          </div>
+        </div>
+        <div class="agenda-item">
+          <div class="agenda-time">11:25–11:45</div>
+          <div class="agenda-body">
+            <div class="atitle">Snowflake for Clinical Teams</div>
+            <div class="adetail">GxP, governance, life sciences references, SAS integration patterns</div>
+          </div>
+        </div>
+        <div class="agenda-item">
+          <div class="agenda-time">11:45–11:55</div>
+          <div class="agenda-body">
+            <div class="atitle">SAS + Snowflake: Better Together</div>
+            <div class="adetail">Connector options, Snowflake Notebooks vs SAS scripts, migration path</div>
+          </div>
+        </div>
+        <div class="agenda-item" style="border-left-color: var(--sf-blue);">
+          <div class="agenda-time">12:00–12:40</div>
+          <div class="agenda-body">
+            <div class="atitle">🎯 LIVE DEMO: Clinical Intelligence Platform</div>
+            <div class="adetail">Data loading → governance → Cortex AI → Cortex Analyst → Document AI</div>
+          </div>
+        </div>
+        <div class="agenda-item">
+          <div class="agenda-time">12:40–1:00</div>
+          <div class="agenda-body">
+            <div class="atitle">AI Roadmap, Q&amp;A &amp; Next Steps</div>
+            <div class="adetail">Biogen-specific opportunities, proposed follow-on workshops, open discussion</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="copy">© 2026 Snowflake Inc. All Rights Reserved</span>
+      <span class="counter">2 / 17</span>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────── -->
+  <!-- SLIDE 3: YOUR TEAM              -->
+  <!-- ──────────────────────────────── -->
+  <div class="slide slide-content" id="slide-3">
+    <div class="progress"></div>
+    <div class="slide-header">
+      <div class="logo">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M16 2L16 30M2 16L30 16M5.5 5.5L26.5 26.5M26.5 5.5L5.5 26.5" stroke="#29B5E8" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="16" r="3" fill="#29B5E8"/></svg>
+        Snowflake
+      </div>
+      <span class="tag">Your Snowflake Team</span>
+    </div>
+    <div class="content" style="padding: 28px 48px 16px;">
+      <div class="slide-eyebrow">Who's In The Room</div>
+      <div class="slide-h2">Your Snowflake Partners at <span>Biogen</span></div>
+      <p class="slide-lead">A team with deep life sciences and clinical domain expertise, dedicated to making this partnership successful.</p>
+      <div class="team-grid">
+        <div class="team-card">
+          <div class="avatar">BL</div>
+          <div class="team-name">Bob LeBoeuf</div>
+          <div class="team-role">Solutions Engineer</div>
+          <div class="team-bio">Dedicated SE for Biogen. Deep expertise in data platform architecture, clinical analytics, and AI/ML on Snowflake. Focused on accelerating value from your Snowflake investment.</div>
+        </div>
+        <div class="team-card" style="border-top: 3px solid var(--sf-blue);">
+          <div class="avatar">KM</div>
+          <div class="team-name">Kelci Miclaus, PhD</div>
+          <div class="team-role">Global Head, Life Sciences</div>
+          <div class="team-bio">Ex-SAS Institute, GSK, Dataiku. Led development of JMP Clinical &amp; JMP Genomics at SAS. 20+ years building clinical data platforms. She knows SAS — and what comes next.</div>
+          <span class="badge badge-blue" style="margin-top: 12px;">SAS Expert</span>
+        </div>
+        <div class="team-card">
+          <div class="avatar">RS</div>
+          <div class="team-name">Ryan Stevens</div>
+          <div class="team-role">Account Executive</div>
+          <div class="team-bio">Senior AE managing the Biogen relationship. Focused on aligning Snowflake's capabilities with Biogen's strategic data and AI priorities across Commercial, R&amp;D, and Clinical.</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="copy">© 2026 Snowflake Inc. All Rights Reserved</span>
+      <span class="counter">3 / 17</span>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────── -->
+  <!-- SLIDE 4: BIOGEN PARTNERSHIP     -->
+  <!-- ──────────────────────────────── -->
+  <div class="slide slide-content" id="slide-4">
+    <div class="progress"></div>
+    <div class="slide-header">
+      <div class="logo">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M16 2L16 30M2 16L30 16M5.5 5.5L26.5 26.5M26.5 5.5L5.5 26.5" stroke="#29B5E8" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="16" r="3" fill="#29B5E8"/></svg>
+        Snowflake
+      </div>
+      <span class="tag">Biogen + Snowflake</span>
+    </div>
+    <div class="content" style="padding: 28px 48px 16px;">
+      <div class="slide-eyebrow">The Partnership at a Glance</div>
+      <div class="slide-h2">Biogen &amp; Snowflake: <span>7 Years Strong</span></div>
+      <div class="stat-row">
+        <div class="stat">
+          <div class="stat-num">2019</div>
+          <div class="stat-label">Partnership Started</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">$1.7M+</div>
+          <div class="stat-label">Credits Consumed (since Dec 2023 renewal)</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">14.8%</div>
+          <div class="stat-label">Cost-per-Query Reduction</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">3x</div>
+          <div class="stat-label">Contract Renewals</div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="col-panel">
+          <h3>✅ Current Active Use Cases</h3>
+          <ul class="check-list">
+            <li>SPOQ &amp; J Drive — Clinical Trial Analytics</li>
+            <li>Veeva Vault Quality + Safety Consolidation</li>
+            <li>Commercial Sales Intelligence</li>
+            <li>Financial &amp; HR Intelligence</li>
+            <li>PO&amp;T / Supply Chain PowerBI Analytics</li>
+            <li>SFDC Health Cloud Patient Services</li>
+          </ul>
+        </div>
+        <div class="col-panel">
+          <h3>🔭 Pipeline Use Cases</h3>
+          <ul class="check-list">
+            <li>Clinical Research / GxP Data Analytics <span class="badge badge-blue">TODAY'S FOCUS</span></li>
+            <li>Patient 360 (Migration from Databricks)</li>
+            <li>Alzheimer's AI Sales Insights</li>
+            <li>Supply Chain Forecasting App (Snowflake-native)</li>
+            <li>Patient Identity Resolution</li>
+            <li>Unstructured Doc AI (POC Complete ✓)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="copy">© 2026 Snowflake Inc. All Rights Reserved</span>
+      <span class="counter">4 / 17</span>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────── -->
+  <!-- SLIDE 5: PLATFORM OVERVIEW      -->
+  <!-- ──────────────────────────────── -->
+  <div class="slide slide-content" id="slide-5">
+    <div class="progress"></div>
+    <div class="slide-header">
+      <div class="logo">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M16 2L16 30M2 16L30 16M5.5 5.5L26.5 26.5M26.5 5.5L5.5 26.5" stroke="#29B5E8" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="16" r="3" fill="#29B5E8"/></svg>
+        Snowflake
+      </div>
+      <span class="tag">Platform Overview</span>
+    </div>
+    <div class="content" style="padding: 28px 48px 16px;">
+      <div class="slide-eyebrow">Beyond the Warehouse</div>
+      <div class="slide-h2">One Platform. <span>All Your Data Workloads.</span></div>
+      <p class="slide-lead">You know Snowflake as a high-performance warehouse. Today we'll show you the full platform — storage, compute, governance, collaboration, and now AI — all in one place, without moving data.</p>
+      <div class="platform-diagram">
+        <div class="platform-row">
+          <div class="platform-box pb-dark" style="flex:3;">
+            <div class="pb-title">☁️ Multi-Cloud Storage &amp; Compute (AWS · Azure · GCP)</div>
+            <div class="pb-sub">Separate storage from compute. Scale independently. Pay only for what you use.</div>
+          </div>
+        </div>
+        <div class="platform-row">
+          <div class="platform-box pb-mid">
+            <div class="pb-title">📥 Data Ingestion</div>
+            <div class="pb-sub">Snowpipe, Kafka, Partner connectors, SAS connector</div>
+          </div>
+          <div class="platform-box pb-mid">
+            <div class="pb-title">🔧 Data Engineering</div>
+            <div class="pb-sub">Snowpark (Python/Java/Scala), Dynamic Tables, dbt</div>
+          </div>
+          <div class="platform-box pb-mid">
+            <div class="pb-title">📊 Analytics &amp; BI</div>
+            <div class="pb-sub">SQL, Notebooks, Tableau, PowerBI, Streamlit</div>
+          </div>
+          <div class="platform-box pb-blue">
+            <div class="pb-title">🤖 Cortex AI</div>
+            <div class="pb-sub">LLMs, Analyst, Search, Document AI — no data movement</div>
+          </div>
+        </div>
+        <div class="platform-row">
+          <div class="platform-box pb-light" style="flex:2;">
+            <div class="pb-title" style="color:var(--sf-navy);">🔒 Governance &amp; Security</div>
+            <div class="pb-sub" style="color:var(--sf-gray);">RBAC · Column masking · Row access policies · Audit logs · HIPAA · GxP-ready</div>
+          </div>
+          <div class="platform-box pb-light" style="flex:2;">
+            <div class="pb-title" style="color:var(--sf-navy);">🔗 Data Sharing &amp; Collaboration</div>
+            <div class="pb-sub" style="color:var(--sf-gray);">Live data sharing, Marketplace, Data Clean Rooms, Secure shares across orgs</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="copy">© 2026 Snowflake Inc. All Rights Reserved</span>
+      <span class="counter">5 / 17</span>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────── -->
+  <!-- SLIDE 6: LIFE SCIENCES          -->
+  <!-- ──────────────────────────────── -->
+  <div class="slide slide-content" id="slide-6">
+    <div class="progress"></div>
+    <div class="slide-header">
+      <div class="logo">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M16 2L16 30M2 16L30 16M5.5 5.5L26.5 26.5M26.5 5.5L5.5 26.5" stroke="#29B5E8" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="16" r="3" fill="#29B5E8"/></svg>
+        Snowflake
+      </div>
+      <span class="tag">Life Sciences</span>
+    </div>
+    <div class="content" style="padding: 28px 48px 16px;">
+      <div class="slide-eyebrow">Purpose-Built for Pharma &amp; Biotech</div>
+      <div class="slide-h2">Why Clinical Teams <span>Choose Snowflake</span></div>
+      <p class="slide-lead">20 of the top 20 global pharmaceutical companies run on Snowflake. Here's what makes it the clinical data platform of choice.</p>
+      <div class="cards-3">
+        <div class="card">
+          <div class="card-icon">🧬</div>
+          <div class="card-title">Multi-Modal Clinical Data</div>
+          <div class="card-text">Handle CDISC/SDTM, FHIR/HL7, genomics, imaging metadata, lab data, EDC exports, and clinical notes — all in one governed platform.</div>
+          <span class="card-tag">CDISC · SDTM · ADaM</span>
+        </div>
+        <div class="card card-blue">
+          <div class="card-icon">🔒</div>
+          <div class="card-title">GxP &amp; Regulatory Ready</div>
+          <div class="card-text">Column-level masking, row access policies, immutable audit logs, and partner-validated GxP frameworks. Built for 21 CFR Part 11 and GAMP compliance.</div>
+          <span class="card-tag">21 CFR Part 11 · GAMP</span>
+        </div>
+        <div class="card">
+          <div class="card-icon">🤝</div>
+          <div class="card-title">Secure Data Collaboration</div>
+          <div class="card-text">Share trial data with CROs, regulators, and academic partners without copying or moving data. Data Clean Rooms for privacy-preserving collaboration.</div>
+          <span class="card-tag">Zero-Copy Sharing</span>
+        </div>
+        <div class="card">
+          <div class="card-icon">⚡</div>
+          <div class="card-title">Replace SAS Batch Jobs</div>
+          <div class="card-text">Snowflake Notebooks run Python + SQL interactively. Snowpark lets you run your statistical models where the data lives — no SAS Grid required.</div>
+          <span class="card-tag">Snowpark · Notebooks</span>
+        </div>
+        <div class="card">
+          <div class="card-icon">🤖</div>
+          <div class="card-title">AI Without a Separate Platform</div>
+          <div class="card-text">Cortex AI runs LLMs directly on your clinical data in Snowflake. Summarize adverse events, classify protocol deviations, query data in plain English.</div>
+          <span class="card-tag">Cortex · LLMs · AI</span>
+        </div>
+        <div class="card">
+          <div class="card-icon">🌐</div>
+          <div class="card-title">Proven Life Sciences Ecosystem</div>
+          <div class="card-text">Native integrations with Veeva, Medidata, SAS Viya, Palantir, and 200+ Marketplace data providers including real-world data, patient claims, and genomics.</div>
+          <span class="card-tag">Veeva · Medidata · SAS</span>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="copy">© 2026 Snowflake Inc. All Rights Reserved</span>
+      <span class="counter">6 / 17</span>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────── -->
+  <!-- SLIDE 7: SAS + SNOWFLAKE        -->
+  <!-- ──────────────────────────────── -->
+  <div class="slide slide-content" id="slide-7">
+    <div class="progress"></div>
+    <div class="slide-header">
+      <div class="logo">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M16 2L16 30M2 16L30 16M5.5 5.5L26.5 26.5M26.5 5.5L5.5 26.5" stroke="#29B5E8" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="16" r="3" fill="#29B5E8"/></svg>
+        Snowflake
+      </div>
+      <span class="tag">SAS + Snowflake</span>
+    </div>
+    <div class="content" style="padding: 28px 48px 16px;">
+      <div class="slide-eyebrow">Two Platforms, One Strategy</div>
+      <div class="slide-h2">SAS + Snowflake: <span>Better Together</span></div>
+      <p class="slide-lead">You don't have to choose. Snowflake complements SAS today and provides a natural evolution path — at your pace.</p>
+      <div class="two-col">
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <div class="highlight-box">
+            <div class="hb-title">🔌 Integration Option 1: SAS/ACCESS to Snowflake</div>
+            <div class="hb-text">Connect SAS to Snowflake via native ODBC/JDBC or the SAS/ACCESS Interface. SAS reads &amp; writes directly to Snowflake tables. Your SAS code runs as-is, data stays in Snowflake.</div>
+          </div>
+          <div class="highlight-box" style="background: linear-gradient(135deg, var(--sf-teal), var(--sf-deep));">
+            <div class="hb-title">🚀 Integration Option 2: SAS Viya on Snowflake</div>
+            <div class="hb-text">SAS Viya can use Snowflake as its in-database processing engine. Push SAS analytics directly into Snowflake compute — no data movement, scale to petabytes.</div>
+          </div>
+          <div style="background: var(--sf-lighter); border: 1px solid #DCE9F4; border-radius: 8px; padding: 16px; border-left: 4px solid var(--sf-green);">
+            <div style="font-size:13px; font-weight:700; color:var(--sf-navy); margin-bottom:6px;">✅ Path 3: Snowflake-Native (Longer Term)</div>
+            <div style="font-size:12px; color:var(--sf-gray); line-height:1.5;">Snowflake Notebooks + Snowpark Python as a modern SAS replacement. Run PROC-equivalent analyses in Python/SQL. Kelci's team has validated this path with other pharma customers.</div>
+          </div>
+        </div>
+        <div class="col-panel">
+          <h3>📋 Common SAS → Snowflake Patterns at Pharma</h3>
+          <ul class="check-list" style="gap: 12px;">
+            <li>SAS datasets (sas7bdat) → Snowflake tables via SAS/ACCESS or ETL</li>
+            <li>PROC SQL → Snowflake SQL (near-identical syntax)</li>
+            <li>SAS macros → Snowflake stored procedures or Snowpark Python</li>
+            <li>PROC MEANS / FREQ → SQL aggregations + Notebooks</li>
+            <li>SAS Grid batch jobs → Snowflake tasks + dynamic tables</li>
+            <li>SAS ODS output → Streamlit dashboards in Snowflake</li>
+            <li>CDISC SDTM/ADaM → Snowflake schemas with governance</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="copy">© 2026 Snowflake Inc. All Rights Reserved</span>
+      <span class="counter">7 / 17</span>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────── -->
+  <!-- SLIDE 8: DEMO SECTION DIVIDER   -->
+  <!-- ──────────────────────────────── -->
+  <div class="slide slide-section" id="slide-8">
+    <div class="progress"></div>
+    <div class="content">
+      <div class="section-icon">🎯</div>
+      <div class="section-number">Live Demo · 40 Minutes</div>
+      <h2>Clinical Intelligence<br>Platform</h2>
+      <p>We'll build a real-time clinical data analytics platform — loading clinical trial data, running statistical summaries, applying Cortex AI, and asking questions in plain English.</p>
+    </div>
+    <div class="slide-footer" style="background:rgba(0,0,0,0.2); border-top-color:rgba(255,255,255,0.15);">
+      <span class="copy" style="color:rgba(255,255,255,0.5);">© 2026 Snowflake Inc. All Rights Reserved</span>
+      <span class="counter" style="color:rgba(255,255,255,0.5);">8 / 17</span>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────── -->
+  <!-- SLIDE 9: DEMO OVERVIEW          -->
+  <!-- ──────────────────────────────── -->
+  <div class="slide slide-content" id="slide-9">
+    <div class="progress"></div>
+    <div class="slide-header">
+      <div class="logo">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M16 2L16 30M2 16L30 16M5.5 5.5L26.5 26.5M26.5 5.5L5.5 26.5" stroke="#29B5E8" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="16" r="3" fill="#29B5E8"/></svg>
+        Snowflake
+      </div>
+      <span class="tag">Demo Architecture</span>
+    </div>
+    <div class="content" style="padding: 28px 48px 16px;">
+      <div class="slide-eyebrow">What We'll Build</div>
+      <div class="slide-h2">Demo: <span>5-Step Clinical Intelligence Flow</span></div>
+      <p class="slide-lead">Using synthetic CDISC-style clinical trial data (adverse events, subject demographics, lab results). Each step maps to a real clinical analytics problem your team faces.</p>
+      <div class="demo-flow">
+        <div class="demo-step">
+          <div class="step-num">1</div>
+          <div class="step-icon">📁</div>
+          <div class="step-title">Load Clinical Data</div>
+          <div class="step-detail">Load SDTM-format CSV files (AE, DM, LB domains) into Snowflake. Show Snowpipe and direct COPY INTO — just like importing SAS datasets.</div>
+        </div>
+        <div class="demo-arrow">›</div>
+        <div class="demo-step">
+          <div class="step-num">2</div>
+          <div class="step-icon">🔒</div>
+          <div class="step-title">Governance &amp; Security</div>
+          <div class="step-detail">Apply column masking on PII fields (subject ID), row access policies by study, and tag clinical data columns for lineage tracking.</div>
+        </div>
+        <div class="demo-arrow">›</div>
+        <div class="demo-step" style="border-top: 3px solid var(--sf-blue);">
+          <div class="step-num">3</div>
+          <div class="step-icon">📓</div>
+          <div class="step-title">Notebooks: SAS → Python</div>
+          <div class="step-detail">Run adverse event summaries and frequency tables in a Snowflake Notebook — the same analyses you'd write in PROC FREQ or PROC MEANS in SAS.</div>
+        </div>
+        <div class="demo-arrow">›</div>
+        <div class="demo-step" style="border-top: 3px solid var(--sf-blue);">
+          <div class="step-num">4</div>
+          <div class="step-icon">🤖</div>
+          <div class="step-title">Cortex AI on Clinical Data</div>
+          <div class="step-detail">Use SNOWFLAKE.CORTEX.COMPLETE to summarize narrative adverse events. Classify severity from free-text clinical notes. All inside Snowflake — no API key needed.</div>
+        </div>
+        <div class="demo-arrow">›</div>
+        <div class="demo-step" style="border-top: 3px solid var(--sf-blue);">
+          <div class="step-num">5</div>
+          <div class="step-icon">💬</div>
+          <div class="step-title">Cortex Analyst</div>
+          <div class="step-detail">Ask "Which study arm had the most Grade 3+ adverse events?" in plain English. Cortex Analyst generates &amp; runs the SQL automatically.</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="copy">© 2026 Snowflake Inc. All Rights Reserved</span>
+      <span class="counter">9 / 17</span>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────── -->
+  <!-- SLIDE 10: DEMO STEP 1-2         -->
+  <!-- ──────────────────────────────── -->
+  <div class="slide slide-content" id="slide-10">
+    <div class="progress"></div>
+    <div class="slide-header">
+      <div class="logo">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M16 2L16 30M2 16L30 16M5.5 5.5L26.5 26.5M26.5 5.5L5.5 26.5" stroke="#29B5E8" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="16" r="3" fill="#29B5E8"/></svg>
+        Snowflake
+      </div>
+      <span class="tag">Demo · Steps 1–2</span>
+    </div>
+    <div class="content" style="padding: 24px 48px 16px;">
+      <div class="slide-eyebrow">Data Loading &amp; Governance</div>
+      <div class="slide-h2">From CSV to <span>Governed Clinical Schema</span></div>
+      <div class="two-col" style="gap:20px;">
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div class="col-panel" style="flex:0; padding:16px 18px;">
+            <h3>📁 Step 1: Load SDTM Data</h3>
+            <div class="code-block" style="font-size:11px; padding:12px 14px; border-radius:6px;">
+<span class="cm">-- Create SDTM Adverse Events domain table</span>
+<span class="kw">CREATE OR REPLACE TABLE</span> CLINICAL.SDTM.AE (
+  STUDYID     <span class="kw">VARCHAR</span>,
+  USUBJID     <span class="kw">VARCHAR</span>,  <span class="cm">-- Subject ID</span>
+  AEDECOD     <span class="kw">VARCHAR</span>,  <span class="cm">-- AE term (MedDRA)</span>
+  AESEV       <span class="kw">VARCHAR</span>,  <span class="cm">-- Severity</span>
+  AESER       <span class="kw">CHAR</span>(<span class="num">1</span>),   <span class="cm">-- Serious (Y/N)</span>
+  AESTDTC     <span class="kw">DATE</span>,      <span class="cm">-- Start date</span>
+  AENARR      <span class="kw">TEXT</span>       <span class="cm">-- Narrative text</span>
+);
+<span class="kw">COPY INTO</span> CLINICAL.SDTM.AE
+<span class="kw">FROM</span> @CLINICAL.STAGE.AE_FILES
+<span class="kw">FILE_FORMAT</span> = (TYPE=<span class="str">'CSV'</span> FIELD_OPTIONALLY_ENCLOSED_BY=<span class="str">'"'</span>);
+            </div>
+          </div>
+          <div class="col-panel" style="flex:0; padding:14px 18px;">
+            <h3>💡 Why This Matters for SAS Teams</h3>
+            <ul class="check-list" style="font-size:12px;">
+              <li>Same CDISC column names your SAS programs reference</li>
+              <li>Load directly from SAS-exported CSVs or Parquet files</li>
+              <li>Incremental loads via Snowpipe (no SAS batch scheduler)</li>
+            </ul>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div class="col-panel" style="flex:0; padding:16px 18px;">
+            <h3>🔒 Step 2: Apply GxP-Style Governance</h3>
+            <div class="code-block" style="font-size:11px; padding:12px 14px; border-radius:6px;">
+<span class="cm">-- Mask subject ID for non-clinical roles</span>
+<span class="kw">CREATE OR REPLACE</span> MASKING POLICY mask_usubjid
+  <span class="kw">AS</span> (val <span class="kw">VARCHAR</span>) <span class="kw">RETURNS VARCHAR</span> ->
+  <span class="kw">CASE WHEN</span> <span class="fn">CURRENT_ROLE</span>() IN (<span class="str">'CLINICAL_REVIEWER'</span>)
+    <span class="kw">THEN</span> val
+    <span class="kw">ELSE</span> <span class="str">'SUBJ-XXXXXX'</span>
+  <span class="kw">END</span>;
+
+<span class="cm">-- Row-level: only see your assigned study</span>
+<span class="kw">CREATE OR REPLACE</span> ROW ACCESS POLICY study_access
+  <span class="kw">ON</span> CLINICAL.SDTM.AE;
+            </div>
+          </div>
+          <div class="col-panel" style="flex:0; padding:14px 18px;">
+            <h3>💡 GxP Audit Trail (Built-In)</h3>
+            <ul class="check-list" style="font-size:12px;">
+              <li>Every query logged to ACCESS_HISTORY view</li>
+              <li>Time-travel: recover any data state up to 90 days</li>
+              <li>Column lineage tracked automatically in Snowsight</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="copy">© 2026 Snowflake Inc. All Rights Reserved</span>
+      <span class="counter">10 / 17</span>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────── -->
+  <!-- SLIDE 11: NOTEBOOKS             -->
+  <!-- ──────────────────────────────── -->
+  <div class="slide slide-content" id="slide-11">
+    <div class="progress"></div>
+    <div class="slide-header">
+      <div class="logo">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M16 2L16 30M2 16L30 16M5.5 5.5L26.5 26.5M26.5 5.5L5.5 26.5" stroke="#29B5E8" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="16" r="3" fill="#29B5E8"/></svg>
+        Snowflake
+      </div>
+      <span class="tag">Demo · Step 3</span>
+    </div>
+    <div class="content" style="padding: 24px 48px 16px;">
+      <div class="slide-eyebrow">Snowflake Notebooks · The SAS Replacement</div>
+      <div class="slide-h2">From <span>PROC FREQ to Python</span> — Same Results, Modern Platform</div>
+      <div class="two-col">
+        <div class="col-panel">
+          <h3>📊 SAS (What You Write Today)</h3>
+          <div class="code-block" style="font-size:11px; padding:14px 16px; border-radius:6px;">
+<span class="cm">/* SAS: AE frequency by severity */</span>
+<span class="kw">PROC FREQ</span> DATA=SDTM.AE;
+  TABLES AEDECOD * AESEV
+    / NOCUM NOPERCENT OUT=ae_freq;
+  <span class="kw">WHERE</span> AESER = <span class="str">'Y'</span>;
+<span class="kw">RUN</span>;
+
+<span class="kw">PROC MEANS</span> DATA=SDTM.LB
+  N MEAN MEDIAN STDDEV;
+  <span class="kw">VAR</span> LBORRES;
+  <span class="kw">CLASS</span> LBTEST ARM;
+<span class="kw">RUN</span>;
+          </div>
+        </div>
+        <div class="col-panel">
+          <h3>📓 Snowflake Notebook (Python + SQL)</h3>
+          <div class="code-block" style="font-size:11px; padding:14px 16px; border-radius:6px;">
+<span class="cm"># Snowflake Notebook: AE frequency analysis</span>
+df_ae = session.table(<span class="str">"CLINICAL.SDTM.AE"</span>) \
+    .filter(col(<span class="str">"AESER"</span>) == <span class="str">"Y"</span>)
+
+ae_freq = df_ae.group_by(<span class="str">"AEDECOD"</span>, <span class="str">"AESEV"</span>) \
+    .agg(count(<span class="str">"*"</span>).alias(<span class="str">"N"</span>)) \
+    .order_by(<span class="str">"N"</span>, ascending=<span class="num">False</span>)
+
+<span class="cm"># Lab stats — same as PROC MEANS</span>
+lb_stats = session.sql(<span class="str">"""
+  SELECT LBTEST, ARM,
+    COUNT(*) AS N,
+    AVG(LBORRES::FLOAT) AS MEAN,
+    MEDIAN(LBORRES::FLOAT) AS MEDIAN,
+    STDDEV(LBORRES::FLOAT) AS STDDEV
+  FROM CLINICAL.SDTM.LB
+  GROUP BY 1, 2
+"""</span>)
+ae_freq.to_pandas()  <span class="cm"># Renders as table in Notebook</span>
+          </div>
+        </div>
+      </div>
+      <div style="background: var(--sf-lighter); border-radius:6px; border: 1px solid #DCE9F4; padding: 12px 16px; margin-top: 12px; display:flex; gap:24px; align-items:center;">
+        <span style="font-size:13px; font-weight:700; color:var(--sf-navy);">Key Difference vs SAS:</span>
+        <span class="badge badge-blue">No SAS Grid License</span>
+        <span class="badge badge-green">Runs in Snowflake Compute</span>
+        <span class="badge badge-navy">Git-Integrated</span>
+        <span class="badge badge-orange">Shareable & Reproducible</span>
+        <span style="font-size:12px; color:var(--sf-gray); margin-left:auto;">Results live in Snowflake tables — governed, auditable, always current</span>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="copy">© 2026 Snowflake Inc. All Rights Reserved</span>
+      <span class="counter">11 / 17</span>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────── -->
+  <!-- SLIDE 12: CORTEX AI             -->
+  <!-- ──────────────────────────────── -->
+  <div class="slide slide-content" id="slide-12">
+    <div class="progress"></div>
+    <div class="slide-header">
+      <div class="logo">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M16 2L16 30M2 16L30 16M5.5 5.5L26.5 26.5M26.5 5.5L5.5 26.5" stroke="#29B5E8" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="16" r="3" fill="#29B5E8"/></svg>
+        Snowflake
+      </div>
+      <span class="tag">Demo · Step 4</span>
+    </div>
+    <div class="content" style="padding: 24px 48px 16px;">
+      <div class="slide-eyebrow">Cortex AI · LLMs at the Data Layer</div>
+      <div class="slide-h2"><span>Cortex AI Functions</span> on Clinical Narratives</div>
+      <p class="slide-lead">No API keys. No data leaves Snowflake. Call enterprise LLMs (Llama 3, Mistral, Arctic) as SQL functions directly on your clinical tables.</p>
+      <div class="two-col">
+        <div class="col-panel">
+          <h3>🤖 Summarize AE Narratives</h3>
+          <div class="code-block" style="font-size:11px; padding:14px; border-radius:6px;">
+<span class="cm">-- Summarize free-text AE narratives with LLM</span>
+<span class="kw">SELECT</span>
+  USUBJID,
+  AEDECOD,
+  AENARR,
+  SNOWFLAKE.CORTEX.<span class="fn">COMPLETE</span>(
+    <span class="str">'llama3.1-70b'</span>,
+    <span class="fn">CONCAT</span>(
+      <span class="str">'Summarize this adverse event report in one '</span>,
+      <span class="str">'clinical sentence. Report: '</span>,
+      AENARR
+    )
+  ) <span class="kw">AS</span> AE_SUMMARY
+<span class="kw">FROM</span> CLINICAL.SDTM.AE
+<span class="kw">WHERE</span> AESER = <span class="str">'Y'</span>
+<span class="kw">LIMIT</span> <span class="num">20</span>;
+          </div>
+        </div>
+        <div class="col-panel">
+          <h3>🏷️ Classify Protocol Deviations</h3>
+          <div class="code-block" style="font-size:11px; padding:14px; border-radius:6px;">
+<span class="cm">-- Auto-classify deviation type from text</span>
+<span class="kw">SELECT</span>
+  DEVIID,
+  DEVITEXT,
+  SNOWFLAKE.CORTEX.<span class="fn">CLASSIFY_TEXT</span>(
+    DEVITEXT,
+    [
+      <span class="str">'Informed Consent'</span>,
+      <span class="str">'Eligibility Criteria'</span>,
+      <span class="str">'Dosing/Administration'</span>,
+      <span class="str">'Visit Window'</span>,
+      <span class="str">'Protocol Procedure'</span>
+    ]
+  ):<span class="str">'label'</span>::VARCHAR <span class="kw">AS</span> DEVIATION_CATEGORY
+<span class="kw">FROM</span> CLINICAL.SDTM.DV;
+          </div>
+        </div>
+      </div>
+      <div style="display:flex; gap:12px; margin-top:12px;">
+        <div class="card" style="flex:1; padding:12px 14px;">
+          <div class="card-title">🔒 Data Never Leaves Snowflake</div>
+          <div class="card-text" style="font-size:11px;">All LLM inference runs inside your Snowflake account boundary. No data sent to external APIs. Critical for clinical/GxP data.</div>
+        </div>
+        <div class="card" style="flex:1; padding:12px 14px;">
+          <div class="card-title">📦 No Infra to Manage</div>
+          <div class="card-text" style="font-size:11px;">No GPU clusters, no MLflow, no separate AI environment. It's a SQL function. Your SAS team can call it.</div>
+        </div>
+        <div class="card" style="flex:1; padding:12px 14px;">
+          <div class="card-title">🔄 Embedded in Pipelines</div>
+          <div class="card-text" style="font-size:11px;">Put Cortex functions in Dynamic Tables or Tasks. Classify new AEs automatically as they arrive — no batch job to schedule.</div>
+        </div>
+        <div class="card" style="flex:1; padding:12px 14px;">
+          <div class="card-title">🧠 Model Choice</div>
+          <div class="card-text" style="font-size:11px;">Llama 3.1 70B/8B, Mistral 7B/Large, Snowflake Arctic. Switch models in one line of SQL to optimize cost vs. accuracy.</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="copy">© 2026 Snowflake Inc. All Rights Reserved</span>
+      <span class="counter">12 / 17</span>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────── -->
+  <!-- SLIDE 13: CORTEX ANALYST        -->
+  <!-- ──────────────────────────────── -->
+  <div class="slide slide-content" id="slide-13">
+    <div class="progress"></div>
+    <div class="slide-header">
+      <div class="logo">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M16 2L16 30M2 16L30 16M5.5 5.5L26.5 26.5M26.5 5.5L5.5 26.5" stroke="#29B5E8" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="16" r="3" fill="#29B5E8"/></svg>
+        Snowflake
+      </div>
+      <span class="tag">Demo · Step 5</span>
+    </div>
+    <div class="content" style="padding: 24px 48px 16px;">
+      <div class="slide-eyebrow">Cortex Analyst · Natural Language to SQL</div>
+      <div class="slide-h2"><span>Ask Your Clinical Data</span> in Plain English</div>
+      <p class="slide-lead">Cortex Analyst understands your data model and lets anyone on your team query it conversationally — no SQL required. Powered by a semantic layer you define once.</p>
+      <div class="two-col">
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div class="highlight-box" style="padding:16px 18px;">
+            <div class="hb-title">💬 Ask: "Which study arm had the most Grade 3+ adverse events in the last 90 days?"</div>
+            <div class="hb-text" style="margin-top:8px; font-family: Consolas, monospace; font-size:11px; background:rgba(0,0,0,0.2); padding:10px; border-radius:4px; line-height:1.6;">
+SELECT ARM, COUNT(*) AS AE_COUNT<br>
+FROM CLINICAL.SDTM.AE<br>
+WHERE AESEV IN ('GRADE 3','GRADE 4','GRADE 5')<br>
+&nbsp;&nbsp;AND AESTDTC >= DATEADD('day',-90,CURRENT_DATE)<br>
+GROUP BY ARM ORDER BY AE_COUNT DESC;
+            </div>
+          </div>
+          <div style="background:var(--sf-lighter); border:1px solid #DCE9F4; border-radius:8px; padding:14px 16px;">
+            <div style="font-size:13px; font-weight:700; color:var(--sf-navy); margin-bottom:10px;">More Clinical Questions Cortex Analyst Can Answer:</div>
+            <ul class="check-list" style="font-size:12px;">
+              <li>"Show me all subjects with abnormal liver labs (ALT &gt; 3× ULN)"</li>
+              <li>"What's the dropout rate by study site?"</li>
+              <li>"Compare mean hemoglobin between treatment arms at Week 12"</li>
+              <li>"List all serious adverse events by MedDRA system organ class"</li>
+            </ul>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div class="col-panel" style="flex:0;">
+            <h3>📐 How It Works</h3>
+            <ul class="check-list" style="font-size:12px; gap:9px;">
+              <li>Define a semantic model (YAML) mapping tables to business concepts — "ARM" = study treatment arm, "AESEV" = severity grade</li>
+              <li>Cortex Analyst reads the semantic model + schema metadata to understand your clinical data vocabulary</li>
+              <li>Users type questions in a chat UI (Streamlit) or via API — Cortex generates verified SQL and returns results with chart</li>
+              <li>Verified SQL is shown to the user — full transparency, no black box</li>
+            </ul>
+          </div>
+          <div style="background: linear-gradient(135deg, var(--sf-navy), var(--sf-deep)); border-radius:8px; padding:14px 16px;">
+            <div style="font-size:13px; font-weight:700; color:white; margin-bottom:6px;">🎯 Value for Biogen's Clinical Team</div>
+            <div style="font-size:12px; color:rgba(255,255,255,0.8); line-height:1.5;">
+              Clinical statisticians spend up to 30% of their time answering ad-hoc data questions from study teams. Cortex Analyst gives study managers self-service access without writing a single line of SQL — or waiting for a programmer.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="copy">© 2026 Snowflake Inc. All Rights Reserved</span>
+      <span class="counter">13 / 17</span>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────── -->
+  <!-- SLIDE 14: DOCUMENT AI           -->
+  <!-- ──────────────────────────────── -->
+  <div class="slide slide-content" id="slide-14">
+    <div class="progress"></div>
+    <div class="slide-header">
+      <div class="logo">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M16 2L16 30M2 16L30 16M5.5 5.5L26.5 26.5M26.5 5.5L5.5 26.5" stroke="#29B5E8" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="16" r="3" fill="#29B5E8"/></svg>
+        Snowflake
+      </div>
+      <span class="tag">Bonus: Document AI</span>
+    </div>
+    <div class="content" style="padding: 28px 48px 16px;">
+      <div class="slide-eyebrow">Unstructured Data — Biogen POC ✅ Complete</div>
+      <div class="slide-h2">Document AI: <span>Unlock Your Clinical Documents</span></div>
+      <p class="slide-lead">Your Biogen unstructured data POC proved the concept. Now the path to production: extract structured data from CSRs, protocols, SAPs, and site monitoring reports — all inside Snowflake.</p>
+      <div class="two-col">
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <div class="col-panel">
+            <h3>📄 What You Can Process</h3>
+            <ul class="check-list">
+              <li>Clinical Study Reports (CSR) — extract tables, outcomes, safety summaries</li>
+              <li>Statistical Analysis Plans (SAP) — parse endpoints and analysis definitions</li>
+              <li>Site Monitoring Reports — flag action items and deviations</li>
+              <li>Investigator Brochures — Q&amp;A chatbot for study teams</li>
+              <li>Regulatory submissions (eCTD) — structured extraction for review</li>
+            </ul>
+          </div>
+          <div class="highlight-box">
+            <div class="hb-title">🏆 Biogen POC Results</div>
+            <div class="hb-text">Proved end-to-end ingestion, extraction, and vectorization of unstructured documents. Hybrid search across structured + unstructured data. Full pipeline automated — no separate AI service required.</div>
+          </div>
+        </div>
+        <div class="col-panel">
+          <h3>🔧 Technical Architecture</h3>
+          <div class="code-block" style="font-size:11px; padding:14px; border-radius:6px;">
+<span class="cm">-- 1. Parse PDF into chunked text</span>
+<span class="kw">SELECT</span> SNOWFLAKE.CORTEX.<span class="fn">PARSE_DOCUMENT</span>(
+  BUILD_SCOPED_FILE_URL(@csr_stage, <span class="str">'study_001_csr.pdf'</span>)
+);
+
+<span class="cm">-- 2. Vectorize for semantic search</span>
+<span class="kw">UPDATE</span> CLINICAL.DOCS.CSR_CHUNKS
+<span class="kw">SET</span> CHUNK_VECTOR = SNOWFLAKE.CORTEX.<span class="fn">EMBED_TEXT_768</span>(
+  <span class="str">'snowflake-arctic-embed-m'</span>, CHUNK_TEXT
+);
+
+<span class="cm">-- 3. Ask a question about your documents</span>
+<span class="kw">SELECT</span> SNOWFLAKE.CORTEX.<span class="fn">COMPLETE</span>(
+  <span class="str">'llama3.1-70b'</span>,
+  <span class="fn">CONCAT</span>(<span class="str">'Based on this CSR excerpt, what was '</span>,
+         <span class="str">'the primary endpoint result? '</span>, context)
+) <span class="kw">AS</span> ANSWER
+<span class="kw">FROM</span> CLINICAL.DOCS.CSR_SEARCH_RESULTS;
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="copy">© 2026 Snowflake Inc. All Rights Reserved</span>
+      <span class="counter">14 / 17</span>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────── -->
+  <!-- SLIDE 15: SNOWFLAKE INTELLIGENCE -->
+  <!-- ──────────────────────────────── -->
+  <div class="slide slide-content" id="slide-15">
+    <div class="progress"></div>
+    <div class="slide-header">
+      <div class="logo">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M16 2L16 30M2 16L30 16M5.5 5.5L26.5 26.5M26.5 5.5L5.5 26.5" stroke="#29B5E8" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="16" r="3" fill="#29B5E8"/></svg>
+        Snowflake
+      </div>
+      <span class="tag">Snowflake Intelligence</span>
+    </div>
+    <div class="content" style="padding: 24px 48px 16px;">
+      <div class="slide-eyebrow">The Unified AI Experience</div>
+      <div class="slide-h2"><span>Snowflake Intelligence:</span> One Agent, All Your Data</div>
+      <p class="slide-lead">We combined everything into a single conversational agent accessible from Snowflake Intelligence — structured data analytics + unstructured document search in one natural language interface.</p>
+      <div class="two-col" style="gap:20px;">
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div class="highlight-box">
+            <div class="hb-title">🤖 Clinical Intelligence Agent</div>
+            <div class="hb-text">A Snowflake Agent that routes questions to the right tool automatically — Cortex Analyst for structured data, Cortex Search for document retrieval.</div>
+          </div>
+          <div class="col-panel" style="flex:0; padding:14px 18px;">
+            <h3>🔧 Architecture</h3>
+            <ul class="check-list" style="font-size:12px;">
+              <li><b>Cortex Search Service</b> — CSR PDF indexed and searchable via managed RAG (replaces manual vector queries)</li>
+              <li><b>Semantic View</b> — 5 tables (DM, AE, LB, AI Summaries, Deviations) with metrics, dimensions, and relationships defined</li>
+              <li><b>AI_COMPLETE tables</b> — Pre-computed LLM results (summaries, classifications, urgency) persisted for instant access</li>
+              <li><b>Snowflake Agent</b> — Combines all tools, accessible in Snowflake Intelligence UI</li>
+            </ul>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div class="col-panel" style="flex:0; padding:14px 18px;">
+            <h3>💬 Try These Questions (Live Demo)</h3>
+            <ul class="check-list" style="font-size:12px; gap:10px;">
+              <li>"Which treatment arm had the most serious adverse events?"</li>
+              <li>"Show me all subjects with ALT above 3x ULN"</li>
+              <li>"What did the CSR conclude about benefit-risk?"</li>
+              <li>"What deviations were classified as dosing errors?"</li>
+              <li>"How many Grade 3+ AEs were drug-related in the 20mg arm?"</li>
+              <li>"What was the primary endpoint result?"</li>
+            </ul>
+          </div>
+          <div style="background: linear-gradient(135deg, var(--sf-navy), var(--sf-deep)); border-radius:8px; padding:14px 16px;">
+            <div style="font-size:13px; font-weight:700; color:white; margin-bottom:6px;">🎯 Why This Matters for Biogen</div>
+            <div style="font-size:12px; color:rgba(255,255,255,0.8); line-height:1.5;">
+              Your clinical team can query trial data AND search CSR documents in plain English — no SQL, no SAS, no separate tools. One unified interface in Snowflake Intelligence. Study managers get answers in seconds, not days.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="copy">© 2026 Snowflake Inc. All Rights Reserved</span>
+      <span class="counter">15 / 17</span>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────── -->
+  <!-- SLIDE 16: NEXT STEPS            -->
+  <!-- ──────────────────────────────── -->
+  <div class="slide slide-content" id="slide-16">
+    <div class="progress"></div>
+    <div class="slide-header">
+      <div class="logo">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M16 2L16 30M2 16L30 16M5.5 5.5L26.5 26.5M26.5 5.5L5.5 26.5" stroke="#29B5E8" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="16" r="3" fill="#29B5E8"/></svg>
+        Snowflake
+      </div>
+      <span class="tag">Next Steps</span>
+    </div>
+    <div class="content" style="padding: 28px 48px 16px;">
+      <div class="slide-eyebrow">From Here to Value</div>
+      <div class="slide-h2">Proposed <span>Next Steps</span> for Biogen Clinical</div>
+      <p class="slide-lead" style="margin-bottom:16px;">Concrete follow-ons to move from today's overview to production clinical AI capabilities.</p>
+      <div class="next-steps">
+        <div class="next-step-item">
+          <div class="ns-num">1</div>
+          <div>
+            <div class="ns-title">SAS Connector Proof of Concept (2 weeks)</div>
+            <div class="ns-detail">Stand up SAS/ACCESS to Snowflake connector in Biogen's dev environment. Validate that existing SAS programs read/write Snowflake tables without code changes. Kelci Miclaus will lead.</div>
+          </div>
+          <div class="ns-owner">Bob + Kelci</div>
+        </div>
+        <div class="next-step-item">
+          <div class="ns-num">2</div>
+          <div>
+            <div class="ns-title">Cortex AI Clinical Workshop (1 day, on-site)</div>
+            <div class="ns-detail">Hands-on session with your clinical stats team to build Cortex AI queries on your SDTM data: AE narrative summarization, deviation classification, Cortex Analyst setup for a real study.</div>
+          </div>
+          <div class="ns-owner">Kelci + Bob</div>
+        </div>
+        <div class="next-step-item">
+          <div class="ns-num">3</div>
+          <div>
+            <div class="ns-title">Document AI Production POC (SPOQ / CSR use case)</div>
+            <div class="ns-detail">Extend the unstructured POC to a production pipeline for SPOQ or Clinical Study Reports. Define acceptance criteria, governance model, and integration with existing Veeva/Medidata workflows.</div>
+          </div>
+          <div class="ns-owner">Bob + Dan B.</div>
+        </div>
+        <div class="next-step-item">
+          <div class="ns-num">4</div>
+          <div>
+            <div class="ns-title">Executive Data Strategy Workshop (optional, no cost)</div>
+            <div class="ns-detail">Snowflake-led workshop with Biogen IT and business leadership to align on an enterprise data + AI strategy — architecture, people, and process. Snowflake can host and facilitate.</div>
+          </div>
+          <div class="ns-owner">Ryan + Bob</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="copy">© 2026 Snowflake Inc. All Rights Reserved</span>
+      <span class="counter">16 / 17</span>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────── -->
+  <!-- SLIDE 17: THANK YOU             -->
+  <!-- ──────────────────────────────── -->
+  <div class="slide slide-thanks" id="slide-17">
+    <div class="progress"></div>
+    <div class="content">
+      <div class="thanks-logo">❄️</div>
+      <div class="thanks-h1">Thank You, <span>Biogen</span></div>
+      <div class="thanks-sub">Questions? We're here for the next 20 minutes. Or reach out to us directly — we're your Snowflake team, and we're here to help Biogen win.</div>
+      <div class="thanks-contact">
+        <div class="contact-item">
+          <label>Solutions Engineer</label>
+          <span>bob.leboeuf@snowflake.com</span>
+        </div>
+        <div class="contact-item">
+          <label>Life Sciences SME</label>
+          <span>kelci.miclaus@snowflake.com</span>
+        </div>
+        <div class="contact-item">
+          <label>Account Executive</label>
+          <span>ryan.stevens@snowflake.com</span>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer" style="background:rgba(0,0,0,0.2); border-top-color:rgba(255,255,255,0.15);">
+      <span class="copy" style="color:rgba(255,255,255,0.5);">© 2026 Snowflake Inc. All Rights Reserved &nbsp;|&nbsp; CONFIDENTIAL</span>
+      <span class="counter" style="color:rgba(255,255,255,0.5);">17 / 17</span>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- Navigation -->
+<div class="nav">
+  <button id="btn-prev" onclick="navigate(-1)" disabled>‹</button>
+  <button id="btn-next" onclick="navigate(1)">›</button>
+</div>
+
+<script>
+  const TOTAL = 17;
+  let current = 1;
+
+  function navigate(dir) {
+    const next = current + dir;
+    if (next < 1 || next > TOTAL) return;
+    document.getElementById('slide-' + current).classList.remove('active');
+    current = next;
+    document.getElementById('slide-' + current).classList.add('active');
+    document.getElementById('btn-prev').disabled = current === 1;
+    document.getElementById('btn-next').disabled = current === TOTAL;
+    // update progress bars
+    const pct = ((current - 1) / (TOTAL - 1)) * 100;
+    document.querySelectorAll('.progress').forEach(el => {
+      el.style.width = pct + '%';
+    });
+  }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') navigate(1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') navigate(-1);
+  });
+
+  // Click to advance (but not on buttons)
+  document.getElementById('deck').addEventListener('click', e => {
+    if (!e.target.closest('button')) navigate(1);
+  });
+
+  // Init progress
+  document.querySelectorAll('.progress').forEach(el => el.style.width = '0%');
+</script>
+</body>
+</html>
