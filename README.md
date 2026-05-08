@@ -90,7 +90,7 @@ The agent is accessible in Snowsight under **Intelligence**. It combines:
 
 ## Key Talking Points for SAS Audience
 
-- Snowflake Notebooks are an alternative to SAS Grid batch jobs — queries can be pushed to Snowflake without forcing a massive change to your workflow
+- Snowflake Notebooks are an alternative to SAS Grid batch jobs — queries can be pushed to Snowflake from SAS, allowing you to continue using your platform of choice with no disruption to your workflow.
 - `AI_COMPLETE` = call LLMs as SQL functions (no API keys, no data leaves Snowflake)
 - Semantic View = define your data model once, query in plain English forever
 - Cortex Search Service = managed RAG (no manual vector embeddings)
