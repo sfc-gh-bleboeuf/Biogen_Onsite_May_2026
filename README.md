@@ -1,26 +1,35 @@
-# Biogen Clinical Intelligence Demo — Snowflake Onsite May 13, 2026
+# Biogen Clinical Intelligence Demo
 
-A 2-hour Snowflake overview and live demo for Biogen's clinical/SAS team, showcasing Snowflake as a clinical AI platform — not just a data warehouse.
+A Snowflake demo for Biogen's clinical/SAS team, showcasing Snowflake as a clinical AI platform — not just a data warehouse. Deployable to any Snowflake account.
 
 ## Session Details
 
 | | |
 |---|---|
-| **Date** | Wednesday, May 13, 2026 · 11am–1pm EDT |
-| **Audience** | Daniel Boisvert, Francis Kendall + Biogen Clinical Team |
+| **Date** | Wednesday, May 13, 2026 |
+| **Audience** | Biogen Clinical Team (SAS experts, new to Snowflake AI) |
 | **Snowflake Team** | Bob LeBoeuf (SE), Kelci Miclaus (Life Sciences SME), Ryan Stevens (AE) |
-| **Account** | `sfsenorthamerica-demo_bleboeuf` |
 
 ## Repository Contents
 
 | File | Description |
 |------|-------------|
 | `biogen_snowflake_may13.html` | 17-slide branded HTML presentation (open in browser, arrow keys to navigate) |
-| `biogen_demo_script.sql` | 640-line demo script — all SQL tested and deployed |
+| `biogen_demo_script.sql` | 640-line demo script — run top-to-bottom in any Snowflake account |
 | `STUDY-2024-001_CSR_Final.pdf` | 13-page mock Clinical Study Report (Phase 2a MS trial, ICH E3 format) |
 | `generate_csr.py` | Python script to regenerate/modify the CSR PDF (requires `reportlab`) |
 
-## Demo Architecture (Deployed to `demo_bleboeuf`)
+## Deployment
+
+This demo can be deployed to **any Snowflake account** with Cortex AI enabled. Run `biogen_demo_script.sql` in sequence — it creates all objects from scratch.
+
+**Requirements:**
+- SYSADMIN role (or equivalent with CREATE DATABASE, CREATE WAREHOUSE)
+- Cortex AI functions enabled (AI_COMPLETE, PARSE_DOCUMENT, EMBED_TEXT_768)
+- Cortex Search Service available
+- Semantic View + Agent support (Snowflake Intelligence)
+
+## Demo Architecture
 
 ```
 BIOGEN_CLINICAL_DEMO
@@ -74,8 +83,8 @@ The agent is accessible in Snowsight under **Intelligence**. It combines:
 ## Running the Demo
 
 1. Open `biogen_snowflake_may13.html` in a browser for the slide deck
-2. Open `biogen_demo_script.sql` in Snowsight (or any SQL editor connected to `demo_bleboeuf`)
-3. Run Acts 1–5 in sequence for the core demo (tables + data already deployed)
+2. Open `biogen_demo_script.sql` in Snowsight (or any SQL editor connected to your account)
+3. Run Acts 1–5 in sequence for the core demo
 4. Acts 6–9 are pre-built — just run the verification/query statements
 5. Open Snowflake Intelligence to demo the agent conversationally
 
