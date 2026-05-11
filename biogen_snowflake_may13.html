@@ -898,7 +898,7 @@
           <div class="agenda-time">11:45–11:55</div>
           <div class="agenda-body">
             <div class="atitle">SAS + Snowflake: Better Together</div>
-            <div class="adetail">Connector options, Snowflake Notebooks vs SAS scripts, migration path</div>
+            <div class="adetail">Connector options, SAS as front-end with Snowflake compute, scaling your current workflows</div>
           </div>
         </div>
         <div class="agenda-item" style="border-left-color: var(--sf-blue);">
@@ -1127,9 +1127,9 @@
         </div>
         <div class="card">
           <div class="card-icon">⚡</div>
-          <div class="card-title">Replace SAS Batch Jobs</div>
-          <div class="card-text">Snowflake Notebooks run Python + SQL interactively. Snowpark lets you run your statistical models where the data lives — no SAS Grid required.</div>
-          <span class="card-tag">Snowpark · Notebooks</span>
+          <div class="card-title">Scale SAS with Snowflake Compute</div>
+          <div class="card-text">SAS connects directly to Snowflake as its compute and storage engine. Push heavy workloads to elastic Snowflake warehouses while keeping your SAS front-end and existing code.</div>
+          <span class="card-tag">SAS/ACCESS · Viya · Snowpark</span>
         </div>
         <div class="card">
           <div class="card-icon">🤖</div>
@@ -1178,20 +1178,20 @@
             <div class="hb-text">SAS Viya can use Snowflake as its in-database processing engine. Push SAS analytics directly into Snowflake compute — no data movement, scale to petabytes.</div>
           </div>
           <div style="background: var(--sf-lighter); border: 1px solid #DCE9F4; border-radius: 8px; padding: 16px; border-left: 4px solid var(--sf-green);">
-            <div style="font-size:13px; font-weight:700; color:var(--sf-navy); margin-bottom:6px;">✅ Path 3: Snowflake-Native (Longer Term)</div>
-            <div style="font-size:12px; color:var(--sf-gray); line-height:1.5;">Snowflake Notebooks + Snowpark Python as a modern SAS replacement. Run PROC-equivalent analyses in Python/SQL. Kelci's team has validated this path with other pharma customers.</div>
+            <div style="font-size:13px; font-weight:700; color:var(--sf-navy); margin-bottom:6px;">✅ Option 3: Snowflake-Native Analytics (When Ready)</div>
+            <div style="font-size:12px; color:var(--sf-gray); line-height:1.5;">Snowflake Notebooks + Snowpark Python available as an additional analytics interface for teams who want it. Not a forced migration — an expansion of capability your team can adopt at their own pace.</div>
           </div>
         </div>
         <div class="col-panel">
-          <h3>📋 Common SAS → Snowflake Patterns at Pharma</h3>
+          <h3>📋 How SAS Teams Use Snowflake as a Back-End</h3>
           <ul class="check-list" style="gap: 12px;">
-            <li>SAS datasets (sas7bdat) → Snowflake tables via SAS/ACCESS or ETL</li>
-            <li>PROC SQL → Snowflake SQL (near-identical syntax)</li>
-            <li>SAS macros → Snowflake stored procedures or Snowpark Python</li>
-            <li>PROC MEANS / FREQ → SQL aggregations + Notebooks</li>
-            <li>SAS Grid batch jobs → Snowflake tasks + dynamic tables</li>
-            <li>SAS ODS output → Streamlit dashboards in Snowflake</li>
-            <li>CDISC SDTM/ADaM → Snowflake schemas with governance</li>
+            <li>SAS reads/writes Snowflake tables directly via SAS/ACCESS (no data export)</li>
+            <li>PROC SQL pushes queries to Snowflake compute (same syntax, elastic scale)</li>
+            <li>SAS macros orchestrate Snowflake stored procedures for heavy transforms</li>
+            <li>PROC MEANS / FREQ run against Snowflake-managed data (no local copies)</li>
+            <li>SAS Grid workloads offload to Snowflake tasks + dynamic tables for scale</li>
+            <li>SAS ODS output complemented by Streamlit dashboards for broader sharing</li>
+            <li>CDISC SDTM/ADaM stored in governed Snowflake schemas — single source of truth</li>
           </ul>
         </div>
       </div>
@@ -1253,8 +1253,8 @@
         <div class="demo-step" style="border-top: 3px solid var(--sf-blue);">
           <div class="step-num">3</div>
           <div class="step-icon">📓</div>
-          <div class="step-title">Notebooks: SAS → Python</div>
-          <div class="step-detail">Run adverse event summaries and frequency tables in a Snowflake Notebook — the same analyses you'd write in PROC FREQ or PROC MEANS in SAS.</div>
+          <div class="step-title">Snowflake-Side Analytics</div>
+          <div class="step-detail">Run additional analyses in Snowflake Notebooks alongside SAS — same data, no duplication. An option for teams ready to expand their toolkit.</div>
         </div>
         <div class="demo-arrow">›</div>
         <div class="demo-step" style="border-top: 3px solid var(--sf-blue);">
@@ -1369,8 +1369,8 @@
       <span class="tag">Demo · Step 3</span>
     </div>
     <div class="content" style="padding: 24px 48px 16px;">
-      <div class="slide-eyebrow">Snowflake Notebooks · The SAS Replacement</div>
-      <div class="slide-h2">From <span>PROC FREQ to Python</span> — Same Results, Modern Platform</div>
+      <div class="slide-eyebrow">Snowflake Notebooks · An Alternative Analytics Interface</div>
+      <div class="slide-h2">SAS Stays. <span>Snowflake Scales.</span> — Same Data, No Silos</div>
       <div class="two-col">
         <div class="col-panel">
           <h3>📊 SAS (What You Write Today)</h3>
@@ -1415,12 +1415,12 @@ ae_freq.to_pandas()  <span class="cm"># Renders as table in Notebook</span>
         </div>
       </div>
       <div style="background: var(--sf-lighter); border-radius:6px; border: 1px solid #DCE9F4; padding: 12px 16px; margin-top: 12px; display:flex; gap:24px; align-items:center;">
-        <span style="font-size:13px; font-weight:700; color:var(--sf-navy);">Key Difference vs SAS:</span>
-        <span class="badge badge-blue">No SAS Grid License</span>
-        <span class="badge badge-green">Runs in Snowflake Compute</span>
+        <span style="font-size:13px; font-weight:700; color:var(--sf-navy);">Why Add Snowflake Compute:</span>
+        <span class="badge badge-blue">Elastic Scale</span>
+        <span class="badge badge-green">Runs on Same Data as SAS</span>
         <span class="badge badge-navy">Git-Integrated</span>
-        <span class="badge badge-orange">Shareable & Reproducible</span>
-        <span style="font-size:12px; color:var(--sf-gray); margin-left:auto;">Results live in Snowflake tables — governed, auditable, always current</span>
+        <span class="badge badge-orange">No Data Silos</span>
+        <span style="font-size:12px; color:var(--sf-gray); margin-left:auto;">SAS keeps working — Snowflake adds scale, AI, and collaboration</span>
       </div>
     </div>
     <div class="slide-footer">
